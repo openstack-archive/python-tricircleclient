@@ -20,7 +20,7 @@ from tricircleclient import utils
 class ListPods(command.Lister):
     """Lists pods"""
 
-    COLS = ('pod_id', 'pod_name', 'az_name')
+    COLS = ('pod_id', 'region_name')
 
     log = logging.getLogger(__name__ + ".ListPods")
 
@@ -29,8 +29,9 @@ class ListPods(command.Lister):
         client = self.app.client_manager.multiregion_networking
         data = client.pod.list()
         remap = {'pod_id': 'id',
-                 'pod_name': 'name',
-                 'az_name': 'availability_zone'}
+                 'region_name': 'Region Name',
+                 'az_name': 'Availability Zone',
+                 'dc_name': 'Data Center'}
         column_headers = utils.prepare_column_headers(self.COLS,
                                                       remap)
 
@@ -43,22 +44,37 @@ class CreatePod(command.ShowOne):
 
     log = logging.getLogger(__name__ + ".CreatePod")
 
-    def _pod_from_args(self, parsed_args):
-        return {'pod': {'pod_name': parsed_args.name,
-                'az_name': parsed_args.availability_zone}}
+    @staticmethod
+    def _pod_from_args(parsed_args):
+        return {'pod': {'region_name': parsed_args.region_name,
+                        'az_name': parsed_args.availability_zone,
+                        'pod_az_name': parsed_args.pod_availability_zone,
+                        'dc_name': parsed_args.data_center,
+                        }}
 
     def get_parser(self, prog_name):
         parser = super(CreatePod, self).get_parser(prog_name)
 
         parser.add_argument(
-            '--name',
-            metavar="<name>",
-            help="Name of the pod",
+            '--region-name',
+            metavar="<region_name>",
+            required=True,
+            help="Region name registered in Keystone",
         )
         parser.add_argument(
             '--availability-zone',
             metavar="<az_name>",
             help="Name of the Availability Zone",
+        )
+        parser.add_argument(
+            '--pod-availability-zone',
+            metavar="<pod_az_name>",
+            help="Name of the Availability Zone forwarded to local Neutron",
+        )
+        parser.add_argument(
+            '--data-center',
+            metavar="<dc_name>",
+            help="Name of the Data Center",
         )
         return parser
 
