@@ -13,6 +13,8 @@
 from keystoneauth1 import adapter
 from oslo_utils import importutils
 
+from tricircleclient import exceptions
+
 
 def Client(version, *args, **kwargs):
     module = 'tricircleclient.v%s.client' % version
@@ -24,10 +26,12 @@ def Client(version, *args, **kwargs):
 class SessionClient(adapter.Adapter):
     def request(self, url, method, **kwargs):
         kwargs.setdefault('headers', kwargs.get('headers', {}))
-        kwargs.pop('raise_exc', True)
+        raise_exc = kwargs.pop('raise_exc', True)
         resp = super(SessionClient, self).request(url,
                                                   method,
                                                   raise_exc=False,
                                                   **kwargs)
 
+        if raise_exc and resp.status_code >= 400:
+            raise exceptions.from_response(resp, method)
         return resp
