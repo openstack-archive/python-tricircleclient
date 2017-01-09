@@ -12,6 +12,7 @@
 
 from tricircleclient import client
 from tricircleclient.v1 import pods
+from tricircleclient.v1 import routings
 
 
 class Client(object):
@@ -26,3 +27,4 @@ class Client(object):
         self.api = client.SessionClient(session, service_type=service_type,
                                         **kwargs)
         self.pod = pods.PodManager(self)
+        self.routing = routings.RoutingManager(self)
