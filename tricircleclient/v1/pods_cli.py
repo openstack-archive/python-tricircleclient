@@ -28,7 +28,7 @@ class ListPods(command.Lister):
         self.log.debug("take_action(%s)" % parsed_args)
         client = self.app.client_manager.multiregion_networking
         data = client.pod.list()
-        remap = {'pod_id': 'id',
+        remap = {'pod_id': 'Id',
                  'region_name': 'Region Name',
                  'az_name': 'Availability Zone',
                  'dc_name': 'Data Center'}
@@ -96,7 +96,7 @@ class ShowPod(command.ShowOne):
         parser.add_argument(
             "pod",
             metavar="<pod>",
-            help="Name or id of the pod to display",
+            help="Id of the pod to display",
         )
 
         return parser
@@ -113,7 +113,7 @@ class ShowPod(command.ShowOne):
 class DeletePod(command.Command):
     """Deletes Pod."""
 
-    log = logging.getLogger(__name__ + ".DeleteJob")
+    log = logging.getLogger(__name__ + ".DeletePod")
 
     def get_parser(self, prog_name):
         parser = super(DeletePod, self).get_parser(prog_name)
