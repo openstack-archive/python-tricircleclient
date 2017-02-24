@@ -46,11 +46,15 @@ class CreatePod(command.ShowOne):
 
     @staticmethod
     def _pod_from_args(parsed_args):
-        return {'pod': {'region_name': parsed_args.region_name,
-                        'az_name': parsed_args.availability_zone,
-                        'pod_az_name': parsed_args.pod_availability_zone,
-                        'dc_name': parsed_args.data_center,
-                        }}
+        result = {}
+        result['region_name'] = parsed_args.region_name
+        if parsed_args.availability_zone:
+            result['az_name'] = parsed_args.availability_zone
+        if parsed_args.pod_availability_zone:
+            result['pod_az_name'] = parsed_args.pod_availability_zone
+        if parsed_args.data_center:
+            result['dc_name'] = parsed_args.data_center
+        return {'pod': result}
 
     def get_parser(self, prog_name):
         parser = super(CreatePod, self).get_parser(prog_name)
@@ -82,7 +86,6 @@ class CreatePod(command.ShowOne):
         self.log.debug("take_action(%s)" % parsed_args)
         client = self.app.client_manager.multiregion_networking
         data = client.pod.create(self._pod_from_args(parsed_args))
-
         return self.dict2columns(data['pod'])
 
 

@@ -53,6 +53,7 @@ ChangeLog
 *~
 .*.swp
 .*sw?
+.idea/
 
 # generated docs
 doc/source/api
