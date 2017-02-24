@@ -11,16 +11,23 @@
 #    under the License.
 
 import re
+import six
+
+from oslo_utils import encodeutils
+
+from tricircleclient.i18n import _
 
 
+@six.python_2_unicode_compatible
 class ClientException(Exception):
     """The base exception class for all exceptions this library raises."""
-    message = 'Unknown Error'
+    message = _('Unknown Error')
 
     def __init__(self, code=None, message=None, request_id=None,
                  url=None, method=None):
         self.code = code
-        self.message = message or self.__class__.message
+        self.message = encodeutils.safe_decode(
+            message or self.__class__.message)
         self.request_id = request_id
         self.url = url
         self.method = method
@@ -112,12 +119,13 @@ _code_map = dict(
 
 def from_response(response, method=None):
     """Return an instance of one of the ClientException on an requests response.
+
     Usage::
         resp, body = requests.request(...)
         if resp.status_code != 200:
             raise from_response(resp)
-    """
 
+    """
     if response.status_code:
         cls, enhanced_classes = _code_map.get(response.status_code,
                                               (ClientException, []))
