@@ -15,13 +15,11 @@ import six
 
 from oslo_utils import encodeutils
 
-from tricircleclient.i18n import _
-
 
 @six.python_2_unicode_compatible
 class ClientException(Exception):
     """The base exception class for all exceptions this library raises."""
-    message = _('Unknown Error')
+    message = 'Unknown Error'
 
     def __init__(self, code=None, message=None, request_id=None,
                  url=None, method=None):
