@@ -13,7 +13,9 @@
 #   under the License.
 #
 
+import copy
 import testtools
+import uuid
 
 from tricircleclient.tests.unit import fakes
 
@@ -43,3 +45,32 @@ class TestCommand(testtools.TestCase):
                 self.assertIn(attr, parsed_args)
                 self.assertEqual(value, getattr(parsed_args, attr))
         return parsed_args
+
+
+class FakePod(object):
+    """Fake one or more Pods."""
+
+    @staticmethod
+    def createPod(opts=None):
+        """Create a fake pod.
+
+        :param opts:Dictionary of options to overwrite
+        :return:
+        A Dictionary with dc_name, pod_name, pod_id,
+        az_name, pod_az_name, region_name
+        """
+        opts = opts or {}
+        # Set default options.
+        fake_pod = {
+            'pod': {
+                'dc_name': 'datacenter',
+                'pod_az_name': 'pod',
+                'pod_id': uuid.uuid4().hex,
+                'az_name': 'availability_zone',
+                'region_name': 'central_region',
+            }
+        }
+
+        # Overwrite default options
+        fake_pod['pod'].update(opts)
+        return copy.deepcopy(fake_pod)

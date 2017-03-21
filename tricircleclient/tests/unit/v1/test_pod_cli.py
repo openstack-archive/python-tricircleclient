@@ -102,3 +102,53 @@ class TestCreatePod(utils.TestCommand):
 
         self.assertEqual(sorted(self._local_data.keys()), sorted(columns))
         self.assertEqual(sorted(self._local_data.values()), sorted(data))
+
+
+class TestShowPod(utils.TestCommand):
+
+    def setUp(self):
+        super(TestShowPod, self).setUp()
+        self.cmd = pods_cli.ShowPod(self.app, None)
+        self.pod_manager = self.app.client_manager.multiregion_networking.pod
+
+    def test_show_without_pod_id(self):
+        arglist = []
+        verifylist = []
+        self.assertRaises(
+            utils.ParserException, self.check_parser, self.cmd, arglist,
+            verifylist)
+
+    def test_show_valid_pod(self):
+        _pod = utils.FakePod.createPod()
+        arglist = [
+            _pod['pod']['pod_id'],
+            ]
+        verifylist = [
+            ("pod", _pod['pod']['pod_id']),
+            ]
+        self.pod_manager.get = mock.Mock(
+            return_value={'pod': _pod})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+        self.assertEqual(
+            sorted(_pod.keys()), sorted(columns))
+        self.assertEqual(
+            sorted(_pod.values()), sorted(data))
+
+    def test_show_valid_pod_with_empty_fields(self):
+        keys = ["dc_name", "pod_az_name", "az_name"]
+        _pod = utils.FakePod.createPod({key: " " for key in keys})
+        arglist = [
+            _pod['pod']['pod_id'],
+            ]
+        verifylist = [
+            ("pod", _pod['pod']['pod_id']),
+            ]
+        self.pod_manager.get = mock.Mock(
+            return_value={'pod': _pod})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+        self.assertEqual(
+            sorted(_pod.keys()), sorted(columns))
+        self.assertEqual(
+            sorted(_pod.values()), sorted(data))
