@@ -152,3 +152,30 @@ class TestShowPod(utils.TestCommand):
             sorted(_pod.keys()), sorted(columns))
         self.assertEqual(
             sorted(_pod.values()), sorted(data))
+
+
+class TestListPod(utils.TestCommand):
+
+    _pod = utils.FakePod.createPod()
+    columns = [
+        'Id',
+        'Region name',
+    ]
+
+    data = []
+    data.append((_pod['pod']['pod_id'], _pod['pod']['region_name']))
+
+    def setUp(self):
+        super(TestListPod, self).setUp()
+        self.cmd = pods_cli.ListPods(self.app, None)
+        self.pod_manager = self.app.client_manager.multiregion_networking.pod
+
+    def test_list(self):
+        arglist = []
+        verifylist = []
+        self.pod_manager.list = mock.Mock(
+            return_value={'pods': [self._pod['pod']]})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+        self.assertEqual(self.columns, sorted(columns))
+        self.assertEqual(self.data, sorted(data))
