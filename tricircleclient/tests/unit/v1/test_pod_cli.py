@@ -119,7 +119,7 @@ class TestShowPod(utils.TestCommand):
             verifylist)
 
     def test_show_valid_pod(self):
-        _pod = utils.FakePod.createPod()
+        _pod = utils.FakePod.create_single_pod()
         arglist = [
             _pod['pod']['pod_id'],
             ]
@@ -137,7 +137,7 @@ class TestShowPod(utils.TestCommand):
 
     def test_show_valid_pod_with_empty_fields(self):
         keys = ["dc_name", "pod_az_name", "az_name"]
-        _pod = utils.FakePod.createPod({key: " " for key in keys})
+        _pod = utils.FakePod.create_single_pod({key: " " for key in keys})
         arglist = [
             _pod['pod']['pod_id'],
             ]
@@ -156,7 +156,7 @@ class TestShowPod(utils.TestCommand):
 
 class TestListPod(utils.TestCommand):
 
-    _pod = utils.FakePod.createPod()
+    _pod = utils.FakePod.create_single_pod()
     columns = [
         'Id',
         'Region name',
@@ -179,3 +179,38 @@ class TestListPod(utils.TestCommand):
         columns, data = (self.cmd.take_action(parsed_args))
         self.assertEqual(self.columns, sorted(columns))
         self.assertEqual(self.data, sorted(data))
+
+
+class TestDeletePod(utils.TestCommand):
+
+    def setUp(self):
+        super(TestDeletePod, self).setUp()
+        self.cmd = pods_cli.DeletePod(self.app, None)
+        self.pod_manager = self.app.client_manager.multiregion_networking.pod
+
+    def test_delete_pod_without_options(self):
+        self.assertRaises(
+            utils.ParserException, self.check_parser, self.cmd, [], [])
+
+    def test_delete_pod(self):
+        arglist = [utils.FakePod.create_single_pod()['pod']['pod_id']]
+        verifylist = [
+            ('pod', arglist),
+            ]
+        self.pod_manager.delete = mock.Mock(
+            return_value=None)
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        result = self.cmd.take_action(parsed_args)
+        self.assertIsNone(result)
+
+    def test_delete_multiple_pod(self):
+        arglist = [pod['pod_id'] for pod in
+                   utils.FakePod.create_multiple_pods()]
+        verifylist = [
+            ('pod', arglist),
+            ]
+        self.pod_manager.delete = mock.Mock(
+            return_value=None)
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        result = self.cmd.take_action(parsed_args)
+        self.assertIsNone(result)
