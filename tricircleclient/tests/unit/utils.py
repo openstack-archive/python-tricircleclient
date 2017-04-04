@@ -34,7 +34,7 @@ class TestCommand(testtools.TestCase):
         self.app = fakes.FakeApp(self.fake_stdout, self.fake_log)
         self.app.client_manager = fakes.FakeClientManager()
 
-    def check_parser(self, cmd, args, verify_args):
+    def check_parser(self, cmd, args=[], verify_args=[]):
         cmd_parser = cmd.get_parser('check_parser')
         try:
             parsed_args = cmd_parser.parse_args(args)
@@ -45,6 +45,12 @@ class TestCommand(testtools.TestCase):
                 self.assertIn(attr, parsed_args)
                 self.assertEqual(value, getattr(parsed_args, attr))
         return parsed_args
+
+
+class TestCommandWithoutOptions(object):
+
+    def test_without_options(self):
+        self.assertRaises(ParserException, self.check_parser, self.cmd)
 
 
 class FakePod(object):
