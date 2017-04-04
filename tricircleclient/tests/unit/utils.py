@@ -91,3 +91,44 @@ class FakePod(object):
         """
         return [FakePod.create_single_pod(opts)['pod']
                 for i in range(0, count)]
+
+
+class FakeRouting(object):
+    """Fake one or more Routings."""
+
+    @staticmethod
+    def create_single_routing(opts=None):
+        """Create a fake routing.
+
+        :param opts: Dictionary of options to overwrite
+        :return: A Dictionary with top_id, bottom_id, pod_id,
+        project_id, resource_type, id
+        """
+        opts = opts or {}
+        # Set default options.
+        fake_routing = {
+            'routing': {
+                'top_id': uuid.uuid4().hex,
+                'bottom_id': uuid.uuid4().hex,
+                'pod_id': uuid.uuid4().hex,
+                'project_id': uuid.uuid4().hex,
+                'resource_type': 'network',
+                'id': uuid.uuid4().hex,
+            }
+        }
+
+        # Overwrite default options
+        fake_routing['routing'].update(opts)
+        return copy.deepcopy(fake_routing)
+
+    @staticmethod
+    def create_multiple_routings(opts=None, count=2):
+        """Create a list of fake routings.
+
+        :param opts: A Dictionary of options to create routing
+        :param count: The number of routings to create
+        :return: A list of Dictionaries with top_id, bottom_id, pod_id,
+        project_id, resource_type, id
+        """
+        return [FakeRouting.create_single_routing(opts)['routing']
+                for i in range(0, count)]

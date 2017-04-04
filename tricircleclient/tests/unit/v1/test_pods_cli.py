@@ -135,17 +135,18 @@ class TestListPod(_TestPodCommand):
         self.cmd = pods_cli.ListPods(self.app, None)
 
     def test_list(self):
-        _pod = utils.FakePod.create_single_pod({'pod_id': '1'})
-        _pod['pod'].pop('dc_name')
-        _pod['pod'].pop('pod_az_name')
-        _pod['pod'].pop('az_name')
+        _pods = utils.FakePod.create_multiple_pods()
+        for pod in _pods:
+            pod.pop('dc_name')
+            pod.pop('pod_az_name')
+            pod.pop('az_name')
         self.pod_manager.list = mock.Mock(
-            return_value={'pods': [_pod['pod']]})
+            return_value={'pods': _pods})
         parsed_args = self.check_parser(self.cmd)
         columns, data = (self.cmd.take_action(parsed_args))
 
         self.assertEqual(self.columns, sorted(columns))
-        self.assertEqual([tuple(sorted(_pod['pod'].values())), ], sorted(data))
+        self.assertEqual(len(_pods), len(data))
 
 
 class TestDeletePod(_TestPodCommand, utils.TestCommandWithoutOptions):
