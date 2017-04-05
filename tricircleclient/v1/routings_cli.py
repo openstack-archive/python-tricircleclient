@@ -11,8 +11,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import six
-
 from osc_lib.command import command
 from oslo_log import log as logging
 
@@ -28,7 +26,7 @@ def _routing_from_args(parsed_args):
             'id': getattr(parsed_args, 'routing', None),
             }
     result = {}
-    result.update((k, v) for k, v in six.iteritems(data) if v)
+    result.update((k, v) for k, v in data.items() if v)
     return {'routing': result}
 
 
