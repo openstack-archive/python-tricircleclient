@@ -51,12 +51,11 @@ class FakePod(object):
     """Fake one or more Pods."""
 
     @staticmethod
-    def createPod(opts=None):
+    def create_single_pod(opts=None):
         """Create a fake pod.
 
         :param opts:Dictionary of options to overwrite
-        :return:
-        A Dictionary with dc_name, pod_name, pod_id,
+        :return: A dictionary with dc_name, pod_name, pod_id,
         az_name, pod_az_name, region_name
         """
         opts = opts or {}
@@ -74,3 +73,15 @@ class FakePod(object):
         # Overwrite default options
         fake_pod['pod'].update(opts)
         return copy.deepcopy(fake_pod)
+
+    @staticmethod
+    def create_multiple_pods(opts=None, count=2):
+        """Create a list of fake pods.
+
+        :param opts: A dictionary of options to create pod
+        :param count: The number of pods to create
+        :return: A list of dictionaries with dc_name, pod_name, pod_id,
+        az_name, pod_az_name, region_name
+        """
+        return [FakePod.create_single_pod(opts)['pod']
+                for i in range(0, count)]
