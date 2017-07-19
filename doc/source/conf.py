@@ -30,6 +30,12 @@ extensions = [
     #'sphinx.ext.intersphinx'
 ]
 
+try:
+    import openstackdocstheme
+    extensions.append('openstackdocstheme')
+except ImportError:
+    openstackdocstheme = None
+
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
 # text edit cycles.
 # execute "export SPHINX_DEBUG=1" in your terminal to disable
@@ -43,6 +49,16 @@ master_doc = 'index'
 # General information about the project.
 project = u'tricircleclient'
 copyright = u'2017, OpenStack Foundation'
+
+# -- Options for openstackdocstheme -------------------------------------------
+repository_name = 'openstack/python-tricircleclient'
+bug_project = 'python-tricircleclient'
+bug_tag = ''
+
+# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
+# using the given strftime format.
+# html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
@@ -61,15 +77,8 @@ pygments_style = 'sphinx'
 # html_theme_path = ["."]
 # html_theme = '_theme'
 # html_static_path = ['static']
-html_theme = os.getenv("SPHINX_HTML_THEME", 'openstack')
 
-if html_theme == "sphinx_rtd_theme":
-    import sphinx_rtd_theme
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-else:
-    import oslosphinx
-    html_theme_path = [os.path.join(os.path.dirname(oslosphinx.__file__),
-                                    'theme')]
+html_theme = 'default' if openstackdocstheme is None else 'openstackdocs'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = '%sdoc' % project
