@@ -13,6 +13,7 @@
 
 from osc_lib.command import command
 from oslo_log import log as logging
+from six.moves.urllib import parse
 
 from tricircleclient import utils
 
@@ -30,17 +31,114 @@ def _routing_from_args(parsed_args):
     return {'routing': result}
 
 
+def _add_pagination_argument(parser):
+    parser.add_argument(
+        '-P', '--page-size',
+        dest='limit', metavar='SIZE', type=int,
+        help="Maximum number of routings to return",
+        default=None)
+
+
+def _add_marker_argument(parser):
+    parser.add_argument(
+        '-M', '--marker',
+        dest='marker', metavar='MARKER', type=str,
+        help="Starting point for next routing list "
+             "that shares same routing id",
+        default=None)
+
+
+def _add_filtering_arguments(parser):
+    parser.add_argument(
+        '--id',
+        dest='id', metavar='id', type=int,
+        help="Uuid of a routing",
+        default=None)
+    parser.add_argument(
+        '--top-id',
+        dest='top_id', metavar='top_id', type=str,
+        help="Resource id on Central Neutron",
+        default=None)
+    parser.add_argument(
+        '--bottom-id',
+        dest='bottom_id', metavar='bottom_id', type=str,
+        help="Resource id on Local Neutron",
+        default=None)
+    parser.add_argument(
+        '--pod-id',
+        dest='pod_id', metavar='pod_id', type=str,
+        help="Uuid of a pod",
+        default=None)
+    parser.add_argument(
+        '--project-id',
+        dest='project_id', metavar='project_id', type=str,
+        help="Uuid of a project object in Keystone",
+        default=None)
+    parser.add_argument(
+        '--resource-type',
+        dest='resource_type', metavar='resource_type', type=str,
+        choices=['network', 'subnet', 'port', 'router', 'security_group'],
+        help="Available resource types",
+        default=None)
+    parser.add_argument(
+        '--created-at',
+        dest='created_at', metavar='created_at', type=str,
+        help="Create time of the resource routing",
+        default=None)
+    parser.add_argument(
+        '--updated-at',
+        dest='updated_at', metavar='updated_at', type=str,
+        help="Update time of the resource routing",
+        default=None)
+
+
+def _add_search_options(parsed_args):
+    search_opts = {}
+    for key in ('limit', 'marker', 'id', 'top_id', 'bottom_id', 'pod_id',
+                'project_id', 'resource_type', 'created_at', 'updated_at'):
+        value = getattr(parsed_args, key, None)
+        if value is not None:
+            search_opts[key] = value
+    return search_opts
+
+
+def _prepare_query_string(params):
+    """Convert dict params to query string"""
+    params = sorted(params.items(), key=lambda x: x[0])
+    return '?%s' % parse.urlencode(params) if params else ''
+
+
 class ListRoutings(command.Lister):
     """Lists Routings"""
 
     COLS = ('id', 'pod_id', 'resource_type')
+    path = '/routings'
+
+    pagination_support = True
+    marker_support = True
 
     log = logging.getLogger(__name__ + ".ListRoutings")
+
+    def get_parser(self, prog_name):
+        parser = super(ListRoutings, self).get_parser(prog_name)
+
+        if self.pagination_support:
+            _add_pagination_argument(parser)
+        if self.marker_support:
+            _add_marker_argument(parser)
+        _add_filtering_arguments(parser)
+
+        return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
         client = self.app.client_manager.multiregion_networking
-        data = client.routing.list()
+
+        # add pagination/marker/filter to list operation
+        search_opts = _add_search_options(parsed_args)
+        self.path += _prepare_query_string(search_opts)
+
+        data = client.routing.list(self.path)
         remap = {'id': 'Id',
                  'pod_id': 'Pod Id',
                  'resource_type': 'Resource Type'}

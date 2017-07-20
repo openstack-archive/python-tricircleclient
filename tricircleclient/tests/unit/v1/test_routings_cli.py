@@ -90,10 +90,11 @@ class TestListRouting(_TestRoutingCommand):
 
     def test_list(self):
         _routings = utils.FakeRouting.create_multiple_routings()
+
         for routing in _routings:
-            routing.pop('top_id')
-            routing.pop('bottom_id')
-            routing.pop('project_id')
+            for key in ('top_id', 'bottom_id', 'project_id'):
+                routing.pop(key)
+
         self.routing_manager.list = mock.Mock(
             return_value={'routings': _routings})
         parsed_args = self.check_parser(self.cmd)
@@ -101,6 +102,72 @@ class TestListRouting(_TestRoutingCommand):
 
         self.assertEqual(self.columns, sorted(columns))
         self.assertEqual(len(_routings), len(data))
+
+    def test_list_with_filters(self):
+        _routing = utils.FakeRouting.create_single_routing()
+        _routing = _routing['routing']
+
+        # we filter the routings by the following fields
+        # given values of _routing, then only single item _routing
+        # is retrieved.
+        arglist = [
+            '--top-id', _routing['top_id'],
+            '--bottom-id', _routing['bottom_id'],
+            '--pod-id', _routing['pod_id'],
+            '--project-id', _routing['project_id'],
+            '--resource-type', _routing['resource_type'],
+            '--created-at', _routing['created_at'],
+            '--updated-at', _routing['updated_at'],
+        ]
+        verifylist = [
+            ('top_id', _routing['top_id']),
+            ('bottom_id', _routing['bottom_id']),
+            ('pod_id', _routing['pod_id']),
+            ('project_id', _routing['project_id']),
+            ('resource_type', _routing['resource_type']),
+            ('created_at', _routing['created_at']),
+            ('updated_at', _routing['updated_at']),
+        ]
+        for key in ('top_id', 'bottom_id', 'project_id'):
+            _routing.pop(key)
+
+        self.routing_manager.list = mock.Mock(
+            return_value={'routings': [_routing]})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+
+        self.assertEqual(self.columns, sorted(columns))
+        self.assertEqual(1, len(data))
+
+    def test_throw_exception(self):
+        arglist = [
+            '--resource-type', 'fake_resource_type',
+        ]
+        verifylist = []
+        self.assertRaises(utils.ParserException, self.check_parser,
+                          self.cmd, arglist, verifylist)
+
+    def test_list_with_pagination(self):
+        _routings = utils.FakeRouting.create_multiple_routings(count=3)
+        arglist = [
+            '--page-size', '2',
+            '--marker', _routings[0]['id'],
+        ]
+        verifylist = [
+            ('limit', 2),
+            ('marker', _routings[0]['id']),
+        ]
+        for routing in _routings:
+            for key in ('top_id', 'bottom_id', 'project_id'):
+                routing.pop(key)
+
+        self.routing_manager.list = mock.Mock(
+            return_value={'routings': _routings[1:]})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+
+        self.assertEqual(self.columns, sorted(columns))
+        self.assertEqual(2, len(data))
 
 
 class TestDeleteRouting(_TestRoutingCommand, utils.TestCommandWithoutOptions):

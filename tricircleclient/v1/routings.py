@@ -18,10 +18,10 @@ from tricircleclient.v1 import base
 
 class RoutingManager(base.Manager):
 
-    def list(self, search_opts=None):
+    def list(self, path):
         """Get a list of Resource Routings."""
         return self._get(
-            '/routings',
+            path,
             headers={'Content-Type': "application/json"}).json()
 
     def create(self, routing):
