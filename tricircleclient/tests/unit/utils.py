@@ -14,6 +14,7 @@
 #
 
 import copy
+from oslo_utils import timeutils
 import testtools
 import uuid
 
@@ -114,6 +115,8 @@ class FakeRouting(object):
                 'project_id': uuid.uuid4().hex,
                 'resource_type': 'network',
                 'id': uuid.uuid4().hex,
+                'created_at': str(timeutils.utcnow()),
+                'updated_at': str(timeutils.utcnow()),
             }
         }
 
