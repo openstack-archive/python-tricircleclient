@@ -1,9 +1,8 @@
 Python bindings and command line tool to the Tricircle API
-=========================================================
+==========================================================
 
-This is a client for `OpenStack Tricircle API`_. There's :doc:`a Python API <api>` (the
-:mod:`tricircleclient` module), and a :doc:`command-line script <shell>`
-(installed as :program:`tricircle`). Each implements the entire Tricircle API.
+This is a client for OpenStack Tricircle API. There's :doc:`a Python API <api>` (the
+:mod:`tricircleclient` module). Each implements the entire Tricircle API.
 
 .. seealso::
 

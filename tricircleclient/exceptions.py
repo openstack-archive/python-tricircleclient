@@ -119,6 +119,7 @@ def from_response(response, method=None):
     """Return an instance of one of the ClientException on an requests response.
 
     Usage::
+
         resp, body = requests.request(...)
         if resp.status_code != 200:
             raise from_response(resp)
