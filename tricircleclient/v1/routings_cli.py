@@ -77,7 +77,9 @@ def _add_filtering_arguments(parser):
     parser.add_argument(
         '--resource-type',
         dest='resource_type', metavar='resource_type', type=str,
-        choices=['network', 'subnet', 'port', 'router', 'security_group'],
+        choices=['network', 'subnet', 'port', 'router', 'security_group',
+                 'trunk', 'port_pair', 'port_pair_group', 'flow_classifier',
+                 'port_chain'],
         help="Available resource types",
         default=None)
     parser.add_argument(
