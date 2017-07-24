@@ -70,6 +70,7 @@ class FakeMultiregionNetworkV1Client(object):
     def __init__(self, **kwargs):
         self.pod = mock.Mock()
         self.routing = mock.Mock()
+        self.job = mock.Mock()
 
 
 class FakeClientManager(object):

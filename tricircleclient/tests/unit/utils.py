@@ -135,3 +135,54 @@ class FakeRouting(object):
         """
         return [FakeRouting.create_single_routing(opts)['routing']
                 for i in range(0, count)]
+
+
+class FakeJob(object):
+    """Fake one or more Jobs."""
+
+    @staticmethod
+    def create_single_job(opts=None):
+        """Create a fake job.
+
+        :param opts: Dictionary of options to overwrite
+        :return: A Dictionary with type, project_id. optional parameters are:
+        router_id, network_id, pod_id, port_id, trunk_id, subnet_id,
+        portchain_id. Different job type needs different resources, they
+        are specified as optional parameters.
+        """
+        opts = opts or {}
+
+        # Set default options.
+        fake_job = {
+            'job': {
+                'id': uuid.uuid4().hex,
+                'type': 'router_setup',
+                'resource': {
+                    'pod_id': uuid.uuid4().hex,
+                    'router_id': uuid.uuid4().hex,
+                    'network_id': uuid.uuid4().hex,
+                },
+                'project_id': uuid.uuid4().hex,
+                'status': 'NEW',
+                'timestamp': str(timeutils.utcnow()),
+            }
+        }
+
+        # Overwrite default options
+        fake_job['job'].update(opts)
+        return fake_job
+
+    @staticmethod
+    def create_multiple_jobs(opts=None, count=2):
+        """Create a list of fake jobs.
+
+        :param opts: A Dictionary of options to create job
+        :param count: The number of routings to create
+        :return: A list of Dictionaries with type, project_id and some
+        optional parameters. Optional paramaters are:
+        router_id, network_id, pod_id, port_id, trunk_id, subnet_id,
+        portchain_id. Different job type needs different resources, they
+        are specified as optional parameters.
+        """
+        return [FakeJob.create_single_job(opts)['job']
+                for i in range(0, count)]

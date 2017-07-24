@@ -11,6 +11,7 @@
 #    under the License.
 
 from tricircleclient import client
+from tricircleclient.v1 import jobs
 from tricircleclient.v1 import pods
 from tricircleclient.v1 import routings
 
@@ -28,3 +29,4 @@ class Client(object):
                                         **kwargs)
         self.pod = pods.PodManager(self)
         self.routing = routings.RoutingManager(self)
+        self.job = jobs.JobManager(self)
