@@ -10,9 +10,9 @@ This is a client for OpenStack Tricircle API. There's :doc:`a Python API <api>` 
     concepts. By understanding the concepts this library and client should make
     more sense.
 
-    __ https://docs.openstack.org/developer/tricircle/
+    __ https://docs.openstack.org/tricircle/latest/
 
-.. _Tricircle: https://docs.openstack.org/developer/tricircle/
+.. _Tricircle: https://docs.openstack.org/tricircle/latest/
 
 Contents:
 
