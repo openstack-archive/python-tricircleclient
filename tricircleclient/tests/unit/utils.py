@@ -15,8 +15,8 @@
 
 import copy
 from oslo_utils import timeutils
+from oslo_utils import uuidutils
 import testtools
-import uuid
 
 from tricircleclient.tests.unit import fakes
 
@@ -71,7 +71,7 @@ class FakePod(object):
             'pod': {
                 'dc_name': 'datacenter',
                 'pod_az_name': 'pod',
-                'pod_id': uuid.uuid4().hex,
+                'pod_id': uuidutils.generate_uuid(),
                 'az_name': 'availability_zone',
                 'region_name': 'central_region',
             }
@@ -109,12 +109,12 @@ class FakeRouting(object):
         # Set default options.
         fake_routing = {
             'routing': {
-                'top_id': uuid.uuid4().hex,
-                'bottom_id': uuid.uuid4().hex,
-                'pod_id': uuid.uuid4().hex,
-                'project_id': uuid.uuid4().hex,
+                'top_id': uuidutils.generate_uuid(),
+                'bottom_id': uuidutils.generate_uuid(),
+                'pod_id': uuidutils.generate_uuid(),
+                'project_id': uuidutils.generate_uuid(),
                 'resource_type': 'network',
-                'id': uuid.uuid4().hex,
+                'id': uuidutils.generate_uuid(),
                 'created_at': str(timeutils.utcnow()),
                 'updated_at': str(timeutils.utcnow()),
             }
@@ -155,14 +155,14 @@ class FakeJob(object):
         # Set default options.
         fake_job = {
             'job': {
-                'id': uuid.uuid4().hex,
+                'id': uuidutils.generate_uuid(),
                 'type': 'router_setup',
                 'resource': {
-                    'pod_id': uuid.uuid4().hex,
-                    'router_id': uuid.uuid4().hex,
-                    'network_id': uuid.uuid4().hex,
+                    'pod_id': uuidutils.generate_uuid(),
+                    'router_id': uuidutils.generate_uuid(),
+                    'network_id': uuidutils.generate_uuid(),
                 },
-                'project_id': uuid.uuid4().hex,
+                'project_id': uuidutils.generate_uuid(),
                 'status': 'NEW',
                 'timestamp': str(timeutils.utcnow()),
             }
