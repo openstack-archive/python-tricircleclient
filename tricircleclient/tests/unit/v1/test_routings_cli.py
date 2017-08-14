@@ -82,6 +82,7 @@ class TestListRouting(_TestRoutingCommand):
         'Id',
         'Pod id',
         'Resource type',
+        'Top id'
     ]
 
     def setUp(self):
@@ -92,7 +93,7 @@ class TestListRouting(_TestRoutingCommand):
         _routings = utils.FakeRouting.create_multiple_routings()
 
         for routing in _routings:
-            for key in ('top_id', 'bottom_id', 'project_id'):
+            for key in ('bottom_id', 'project_id'):
                 routing.pop(key)
 
         self.routing_manager.list = mock.Mock(
@@ -128,7 +129,7 @@ class TestListRouting(_TestRoutingCommand):
             ('created_at', _routing['created_at']),
             ('updated_at', _routing['updated_at']),
         ]
-        for key in ('top_id', 'bottom_id', 'project_id'):
+        for key in ('bottom_id', 'project_id'):
             _routing.pop(key)
 
         self.routing_manager.list = mock.Mock(
@@ -158,7 +159,7 @@ class TestListRouting(_TestRoutingCommand):
             ('marker', _routings[0]['id']),
         ]
         for routing in _routings:
-            for key in ('top_id', 'bottom_id', 'project_id'):
+            for key in ('bottom_id', 'project_id'):
                 routing.pop(key)
 
         self.routing_manager.list = mock.Mock(

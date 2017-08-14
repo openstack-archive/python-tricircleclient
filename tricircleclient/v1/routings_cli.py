@@ -113,7 +113,7 @@ def _prepare_query_string(params):
 class ListRoutings(command.Lister):
     """Lists Routings"""
 
-    COLS = ('id', 'pod_id', 'resource_type')
+    COLS = ('id', 'pod_id', 'resource_type', 'top_id')
     path = '/routings'
 
     pagination_support = True
@@ -143,7 +143,8 @@ class ListRoutings(command.Lister):
         data = client.routing.list(self.path)
         remap = {'id': 'Id',
                  'pod_id': 'Pod Id',
-                 'resource_type': 'Resource Type'}
+                 'resource_type': 'Resource Type',
+                 'top_id': 'Top Id'}
         column_headers = utils.prepare_column_headers(self.COLS,
                                                       remap)
 
