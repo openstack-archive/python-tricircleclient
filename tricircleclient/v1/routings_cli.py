@@ -33,50 +33,50 @@ def _routing_from_args(parsed_args):
 
 def _add_pagination_argument(parser):
     parser.add_argument(
-        '-P', '--page-size',
-        dest='limit', metavar='SIZE', type=int,
+        '--limit',
+        dest='limit', metavar="<num-routings>", type=int,
         help="Maximum number of routings to return",
         default=None)
 
 
 def _add_marker_argument(parser):
     parser.add_argument(
-        '-M', '--marker',
-        dest='marker', metavar='MARKER', type=str,
-        help="Starting point for next routing list "
-             "that shares same routing id",
+        '--marker',
+        dest='marker', metavar="<routing>", type=str,
+        help="ID of last routing in previous page, routings after marker "
+             "will be returned. Display all routings if not specified.",
         default=None)
 
 
 def _add_filtering_arguments(parser):
     parser.add_argument(
-        '--id',
-        dest='id', metavar='id', type=int,
-        help="Uuid of a routing",
+        '--routing',
+        dest='routing', metavar="<routing>", type=int,
+        help="ID of a routing",
         default=None)
     parser.add_argument(
         '--top-id',
-        dest='top_id', metavar='top_id', type=str,
+        dest='top_id', metavar="<top-id>", type=str,
         help="Resource id on Central Neutron",
         default=None)
     parser.add_argument(
         '--bottom-id',
-        dest='bottom_id', metavar='bottom_id', type=str,
+        dest='bottom_id', metavar="<bottom-id>", type=str,
         help="Resource id on Local Neutron",
         default=None)
     parser.add_argument(
         '--pod-id',
-        dest='pod_id', metavar='pod_id', type=str,
-        help="Uuid of a pod",
+        dest='pod_id', metavar="<pod-id>", type=str,
+        help="ID of a pod",
         default=None)
     parser.add_argument(
         '--project-id',
-        dest='project_id', metavar='project_id', type=str,
-        help="Uuid of a project object in Keystone",
+        dest='project_id', metavar="<project-id>", type=str,
+        help="ID of a project object in Keystone",
         default=None)
     parser.add_argument(
         '--resource-type',
-        dest='resource_type', metavar='resource_type', type=str,
+        dest='resource_type', metavar="<resource-type>", type=str,
         choices=['network', 'subnet', 'port', 'router', 'security_group',
                  'trunk', 'port_pair', 'port_pair_group', 'flow_classifier',
                  'port_chain'],
@@ -84,12 +84,12 @@ def _add_filtering_arguments(parser):
         default=None)
     parser.add_argument(
         '--created-at',
-        dest='created_at', metavar='created_at', type=str,
+        dest='created_at', metavar="<created-at>", type=str,
         help="Create time of the resource routing",
         default=None)
     parser.add_argument(
         '--updated-at',
-        dest='updated_at', metavar='updated_at', type=str,
+        dest='updated_at', metavar="<updated-at>", type=str,
         help="Update time of the resource routing",
         default=None)
 
@@ -116,18 +116,13 @@ class ListRoutings(command.Lister):
     COLS = ('id', 'pod_id', 'resource_type', 'top_id')
     path = '/routings'
 
-    pagination_support = True
-    marker_support = True
-
     log = logging.getLogger(__name__ + ".ListRoutings")
 
     def get_parser(self, prog_name):
         parser = super(ListRoutings, self).get_parser(prog_name)
 
-        if self.pagination_support:
-            _add_pagination_argument(parser)
-        if self.marker_support:
-            _add_marker_argument(parser)
+        _add_pagination_argument(parser)
+        _add_marker_argument(parser)
         _add_filtering_arguments(parser)
 
         return parser
@@ -141,13 +136,13 @@ class ListRoutings(command.Lister):
         self.path += _prepare_query_string(search_opts)
 
         data = client.routing.list(self.path)
-        remap = {'id': 'Id',
-                 'pod_id': 'Pod Id',
-                 'resource_type': 'Resource Type',
-                 'top_id': 'Top Id'}
+        remap = {'resource_type': 'Resource Type',
+                 'pod': 'Pod',
+                 'id': 'ID',
+                 'top': 'Top',
+                 }
         column_headers = utils.prepare_column_headers(self.COLS,
                                                       remap)
-
         return utils.list2cols(
             self.COLS, data['routings'], column_headers)
 
@@ -162,31 +157,31 @@ class CreateRouting(command.ShowOne):
 
         parser.add_argument(
             '--top-id',
-            metavar="<top_id>",
+            metavar="<top-id>",
             required=True,
             help="Resource id on Central Neutron",
         )
         parser.add_argument(
             '--bottom-id',
-            metavar="<bottom_id>",
+            metavar="<bottom-id>",
             required=True,
             help="Resource id on Local Neutron",
         )
         parser.add_argument(
             '--pod-id',
-            metavar="<pod_id>",
+            metavar="<pod-id>",
             required=True,
-            help="Uuid of a pod",
+            help="ID of a pod",
         )
         parser.add_argument(
             '--project-id',
-            metavar="<project_id>",
+            metavar="<project-id>",
             required=True,
-            help="Uuid of a project object in Keystone",
+            help="ID of a project object in Keystone",
         )
         parser.add_argument(
             '--resource-type',
-            metavar="<resource_type>",
+            metavar="<resource-type>",
             choices=['network', 'subnet', 'port', 'router', 'security_group'],
             required=True,
             help="Available resource types",
@@ -211,7 +206,7 @@ class ShowRouting(command.ShowOne):
         parser.add_argument(
             "routing",
             metavar="<routing>",
-            help="Id of the routing resource to display",
+            help="ID of the routing resource to display",
         )
 
         return parser
@@ -234,7 +229,7 @@ class DeleteRouting(command.Command):
         parser = super(DeleteRouting, self).get_parser(prog_name)
         parser.add_argument(
             "routing",
-            metavar="<Routing>",
+            metavar="<routing>",
             nargs="+",
             help="ID(s) of the routing resource(s) to delete",
         )
@@ -258,33 +253,33 @@ class UpdateRouting(command.Command):
 
         parser.add_argument(
             '--top-id',
-            metavar="<top_id>",
+            metavar="<top-id>",
             help="Resource id on Central Neutron",
         )
         parser.add_argument(
             '--bottom-id',
-            metavar="<bottom_id>",
+            metavar="<bottom-id>",
             help="Resource id on Local Neutron",
         )
         parser.add_argument(
             '--pod-id',
-            metavar="<pod_id>",
-            help="Uuid of a pod",
+            metavar="<pod-id>",
+            help="ID of a pod",
         )
         parser.add_argument(
             '--project-id',
-            metavar="<project_id>",
-            help="Uuid of a project object in Keystone",
+            metavar="<project-id>",
+            help="ID of a project object in Keystone",
         )
         parser.add_argument(
             '--resource-type',
-            metavar="<resource_type>",
+            metavar="<resource-type>",
             choices=['network', 'subnet', 'port', 'router', 'security_group'],
             help="Available resource types",
         )
         parser.add_argument(
             "routing",
-            metavar="<Routing>",
+            metavar="<routing>",
             help="ID of the routing resource to update",
         )
         return parser

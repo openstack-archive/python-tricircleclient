@@ -17,7 +17,7 @@ def prepare_column_headers(columns, remap=None):
     for c in columns:
         for old, new in remap.items():
             c = c.replace(old, new)
-        new_columns.append(c.replace('_', ' ').capitalize())
+        new_columns.append(c.replace('_', ' '))
 
     return new_columns
 

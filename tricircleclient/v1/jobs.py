@@ -18,10 +18,10 @@ from tricircleclient.v1 import base
 
 class JobManager(base.Manager):
 
-    def list(self, search_opts=None):
+    def list(self, path):
         """Get a list of jobs."""
         return self._get(
-            '/jobs',
+            path,
             headers={'Content-Type': "application/json"}).json()
 
     def create(self, job):

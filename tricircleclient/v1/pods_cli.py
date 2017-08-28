@@ -28,7 +28,7 @@ class ListPods(command.Lister):
         self.log.debug("take_action(%s)" % parsed_args)
         client = self.app.client_manager.multiregion_networking
         data = client.pod.list()
-        remap = {'pod_id': 'Id',
+        remap = {'pod_id': 'ID',
                  'region_name': 'Region Name',
                  'az_name': 'Availability Zone',
                  'dc_name': 'Data Center'}

@@ -67,7 +67,7 @@ class TestShowJob(_TestJobCommand, utils.TestCommandWithoutOptions):
             _job['job']['id'],
             ]
         verifylist = [
-            ('id', _job['job']['id']),
+            ('job', _job['job']['id']),
             ]
         self.job_manager.get = mock.Mock(return_value=_job)
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
@@ -88,13 +88,102 @@ class TestListJob(_TestJobCommand):
         self.job_manager.list = mock.Mock(return_value={'jobs': _jobs})
         parsed_args = self.check_parser(self.cmd)
         columns, data = (self.cmd.take_action(parsed_args))
-
         self.assertEqual(sorted(constants.COLUMNS_REMAP.values()),
                          sorted(columns))
         self.assertEqual(len(_jobs), len(data))
         self.assertEqual(
             sorted([tuple(o[k] for k in constants.COLUMNS) for o in _jobs]),
             sorted(data))
+
+    def test_list_with_filters(self):
+        _job = utils.FakeJob.create_single_job()
+        _job = _job['job']
+
+        # we filter the jobs by the following fields: project ID, type, status.
+        # given values of _job, then only single item _job is retrieved.
+        arglist = [
+            '--project-id', _job['project_id'],
+            '--type', _job['type'],
+            '--status', _job['status'],
+        ]
+        verifylist = [
+            ('project_id', _job['project_id']),
+            ('type', _job['type']),
+            ('status', _job['status'].lower()),
+        ]
+
+        self.job_manager.list = mock.Mock(return_value={'jobs':  [_job]})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+
+        self.assertEqual(1, len(data))
+        self.assertEqual(sorted(constants.COLUMNS_REMAP.values()),
+                         sorted(columns))
+
+        # lower case of job status
+        arglist = [
+            '--status', _job['status'].lower(),
+        ]
+        verifylist = [
+            ('status', _job['status'].lower()),
+        ]
+
+        self.job_manager.list = mock.Mock(return_value={'jobs': [_job]})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+
+        self.assertEqual(1, len(data))
+        self.assertEqual(sorted(constants.COLUMNS_REMAP.values()),
+                         sorted(columns))
+
+    def test_invalid_job_status_filter(self):
+        # unrecognizable job status filter
+        arglist = [
+            '--status', 'new_1',
+        ]
+        verifylist = []
+        self.assertRaises(utils.ParserException, self.check_parser,
+                          self.cmd, arglist, verifylist)
+
+    def test_list_with_pagination(self):
+        number_of_jobs = 4
+        limit = number_of_jobs - 2
+        _jobs = utils.FakeJob.create_multiple_jobs(count=number_of_jobs)
+
+        # test list operation with pagination
+        arglist = [
+            '--limit', str(limit),
+        ]
+        verifylist = [
+            ('limit', limit),
+        ]
+
+        self.job_manager.list = mock.Mock(return_value={"jobs": _jobs[:limit]})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+
+        self.assertEqual(limit, len(data))
+        self.assertEqual(sorted(constants.COLUMNS_REMAP.values()),
+                         sorted(columns))
+
+        # test list operation with pagination and marker
+        arglist = [
+            '--limit', str(limit),
+            '--marker', _jobs[0]['id'],
+        ]
+        verifylist = [
+            ('limit', limit),
+            ('marker', _jobs[0]['id']),
+        ]
+
+        self.job_manager.list = mock.Mock(
+            return_value={"jobs": _jobs[1:limit+1]})
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+        columns, data = (self.cmd.take_action(parsed_args))
+
+        self.assertEqual(limit, len(data))
+        self.assertEqual(sorted(constants.COLUMNS_REMAP.values()),
+                         sorted(columns))
 
 
 class TestDeleteJob(_TestJobCommand, utils.TestCommandWithoutOptions):
@@ -109,7 +198,7 @@ class TestDeleteJob(_TestJobCommand, utils.TestCommandWithoutOptions):
             _job['job']['id'],
             ]
         verifylist = [
-            ('id', _job['job']['id']),
+            ('job', [_job['job']['id']]),
             ]
         self.job_manager.delete = mock.Mock(return_value=None)
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
@@ -130,7 +219,7 @@ class TestRedoJob(_TestJobCommand, utils.TestCommandWithoutOptions):
             _job['job']['id'],
         ]
         verifylist = [
-            ('id', _job['job']['id']),
+            ('job', _job['job']['id']),
         ]
         self.job_manager.update = mock.Mock(return_value=None)
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)

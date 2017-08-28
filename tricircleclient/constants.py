@@ -44,9 +44,9 @@ job_resource_map = {
 # listed by alphabet order.
 COLUMNS = ('id', 'project_id', 'status', 'timestamp', 'type')
 
-# column headers that show in command line.
-COLUMNS_REMAP = {'id': 'Id',
-                 'project_id': 'Project id',
+# column headers about job that show in command line.
+COLUMNS_REMAP = {'id': 'ID',
+                 'project_id': 'Project',
                  'timestamp': 'Timestamp',
                  'status': 'Status',
                  'type': 'Type'}
