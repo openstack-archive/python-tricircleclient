@@ -126,8 +126,8 @@ class TestShowPod(_TestPodCommand, utils.TestCommandWithoutOptions):
 class TestListPod(_TestPodCommand):
 
     columns = [
-        'Id',
-        'Region name',
+        'ID',
+        'Region Name',
     ]
 
     def setUp(self):

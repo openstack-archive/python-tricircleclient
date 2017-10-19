@@ -79,10 +79,10 @@ class TestShowRouting(_TestRoutingCommand, utils.TestCommandWithoutOptions):
 class TestListRouting(_TestRoutingCommand):
 
     columns = [
-        'Id',
-        'Pod id',
-        'Resource type',
-        'Top id'
+        'ID',
+        'Pod ID',
+        'Resource Type',
+        'Top ID'
     ]
 
     def setUp(self):
@@ -100,8 +100,7 @@ class TestListRouting(_TestRoutingCommand):
             return_value={'routings': _routings})
         parsed_args = self.check_parser(self.cmd)
         columns, data = (self.cmd.take_action(parsed_args))
-
-        self.assertEqual(self.columns, sorted(columns))
+        self.assertEqual(sorted(self.columns), sorted(columns))
         self.assertEqual(len(_routings), len(data))
 
     def test_list_with_filters(self):
@@ -151,7 +150,7 @@ class TestListRouting(_TestRoutingCommand):
     def test_list_with_pagination(self):
         _routings = utils.FakeRouting.create_multiple_routings(count=3)
         arglist = [
-            '--page-size', '2',
+            '--limit', '2',
             '--marker', _routings[0]['id'],
         ]
         verifylist = [
@@ -167,7 +166,7 @@ class TestListRouting(_TestRoutingCommand):
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
         columns, data = (self.cmd.take_action(parsed_args))
 
-        self.assertEqual(self.columns, sorted(columns))
+        self.assertEqual(sorted(self.columns), sorted(columns))
         self.assertEqual(2, len(data))
 
 
@@ -178,12 +177,14 @@ class TestDeleteRouting(_TestRoutingCommand, utils.TestCommandWithoutOptions):
         self.cmd = routings_cli.DeleteRouting(self.app, None)
 
     def test_delete_routing(self):
-        _routing = utils.FakeRouting.create_single_routing()
+        _routings = utils.FakeRouting.create_multiple_routings(count=2)
+
         arglist = [
-            _routing['routing']['id'],
+            _routings[0]['id'],
+            _routings[1]['id'],
             ]
         verifylist = [
-            ('routing', [_routing['routing']['id']]),
+            ('routing', [_routings[0]['id'], _routings[1]['id']]),
             ]
         self.routing_manager.delete = mock.Mock(return_value=None)
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
