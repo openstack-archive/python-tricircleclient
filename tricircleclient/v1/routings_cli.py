@@ -137,9 +137,9 @@ class ListRoutings(command.Lister):
 
         data = client.routing.list(self.path)
         remap = {'resource_type': 'Resource Type',
-                 'pod': 'Pod',
+                 'pod_id': 'Pod',
                  'id': 'ID',
-                 'top': 'Top',
+                 'top_id': 'Top',
                  }
         column_headers = utils.prepare_column_headers(self.COLS,
                                                       remap)
