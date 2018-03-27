@@ -80,9 +80,9 @@ class TestListRouting(_TestRoutingCommand):
 
     columns = [
         'ID',
-        'Pod ID',
+        'Pod',
         'Resource Type',
-        'Top ID'
+        'Top'
     ]
 
     def setUp(self):
