@@ -1,5 +1,5 @@
 The :mod:`tricircleclient` Python API
-====================================
+=====================================
 
 .. module:: tricircleclient
    :synopsis: A client for the Tricircle API.
@@ -21,6 +21,6 @@ Reference
 For more information, see the reference:
 
 .. toctree::
-   :maxdepth: 2
+   :glob:
 
-   api/autoindex
+   api/*
