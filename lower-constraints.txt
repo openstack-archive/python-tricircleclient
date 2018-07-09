@@ -42,6 +42,7 @@ oslo.context==2.19.2
 oslo.i18n==3.15.3
 oslo.log==3.36.0
 oslo.serialization==2.18.0
+oslosphinx===4.7.0
 oslo.utils==3.33.0
 pbr==2.0.0
 pep8==1.5.7
@@ -62,10 +63,12 @@ rfc3986==0.3.1
 simplejson==3.5.1
 six==1.10.0
 snowballstemmer==1.2.1
-Sphinx==1.6.5
+Sphinx==1.6.2
 sphinxcontrib-websupport==1.0.1
 stevedore==1.20.0
+tempest==17.1.0
 testrepository==0.0.18
+stestr==2.0.0
 testtools==2.2.0
 traceback2==1.4.0
 unittest2==1.1.0
