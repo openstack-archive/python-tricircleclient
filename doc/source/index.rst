@@ -12,8 +12,6 @@ This is a client for OpenStack Tricircle API. There's :doc:`a Python API <api>` 
 
     __ https://docs.openstack.org/tricircle/latest/
 
-.. _Tricircle: https://docs.openstack.org/tricircle/latest/
-
 Contents:
 
 .. toctree::
