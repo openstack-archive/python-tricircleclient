@@ -1,11 +1,6 @@
 The :mod:`tricircleclient` Python API
 =====================================
 
-.. module:: tricircleclient
-   :synopsis: A client for the Tricircle API.
-
-.. currentmodule:: tricircleclient
-
 Usage
 -----
 
