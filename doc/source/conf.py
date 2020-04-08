@@ -26,15 +26,11 @@ sys.path.insert(0, BASE_DIR)
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
-    'sphinx.ext.autodoc',
+    'sphinxcontrib.apidoc',
+    'openstackdocstheme'
     #'sphinx.ext.intersphinx'
 ]
 
-try:
-    import openstackdocstheme
-    extensions.append('openstackdocstheme')
-except ImportError:
-    openstackdocstheme = None
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
 # text edit cycles.
@@ -55,11 +51,6 @@ repository_name = 'openstack/python-tricircleclient'
 bug_project = 'python-tricircleclient'
 bug_tag = ''
 
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
-# using the given strftime format.
-# html_last_updated_fmt = '%b %d, %Y'
-html_last_updated_fmt = '%Y-%m-%d %H:%M'
-
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
 
@@ -78,8 +69,6 @@ pygments_style = 'sphinx'
 # html_theme = '_theme'
 # html_static_path = ['static']
 
-html_theme = 'default' if openstackdocstheme is None else 'openstackdocs'
-
 # Output file base name for HTML help builder.
 htmlhelp_basename = '%sdoc' % project
 
@@ -96,3 +85,10 @@ latex_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 #intersphinx_mapping = {'http://docs.python.org/': None}
 
+# -- sphinxcontrib.apidoc configuration --------------------------------------
+
+apidoc_module_dir = '../../tricircleclient'
+apidoc_output_dir = 'api'
+apidoc_excluded_paths = [
+    'tests',
+]
