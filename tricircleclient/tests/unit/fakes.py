@@ -14,8 +14,7 @@
 #
 
 import sys
-
-import mock
+from unittest import mock
 
 
 class FakeStdout(object):
